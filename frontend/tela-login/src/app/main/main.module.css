@@ -37,9 +37,12 @@
 }
 
 .option {
-    border-bottom: 4px solid var(--primary-color);
     font-size: 20px;
     padding-bottom: 10px;
     text-transform: uppercase;
     cursor: pointer;
+}
+
+.selected {
+    border-bottom: 4px solid var(--primary-color);
 }

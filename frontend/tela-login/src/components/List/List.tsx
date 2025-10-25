@@ -6,17 +6,21 @@ import Trash from "@/assets/trash.png";
 import Avatar from "@/assets/user-profile.png";
 import Shield from "@/assets/shield.png";
 import Icon from "@/assets/image-add.png";
+import { useRouter } from "next/navigation";
 
 type ListProps = {
-    name: string,
-    icon: string
+    icon: string;
+    name: string;
+    id: string | number;
+    page: string;
 }
 
 
-export default function List({name, icon}: ListProps) {
+export default function List({ icon, name, id, page }: ListProps) {
+    const router = useRouter();
+
 
     let image = Avatar;
-
 
     if(icon == "Avatar") {
         image = Avatar;
@@ -25,6 +29,24 @@ export default function List({name, icon}: ListProps) {
     } else if(icon == "Icon") {
         image = Icon;
     }
+
+    let basePath = "";
+    if (page === "administrador") {
+        basePath = "/administradores";
+    } else if (page === "permissao") {
+        basePath = "/permissoes";
+    } else if (page === "publicacao") {
+        basePath = "/publicacoes";
+    }
+
+    const handleEdit = () => {
+        router.push(`${basePath}/${id}/editar`);
+    };
+
+    const handleDelete = () => {
+        alert(`Tem certeza que deseja excluir ${name}?`);
+        router.push(`${basePath}/${id}/excluir`);
+    };
     
 
     return (
@@ -34,8 +56,12 @@ export default function List({name, icon}: ListProps) {
                 <p>{name}</p>
             </div>
             <div className={styles.options}>
-                <button className={styles.button}><Image src={Edit} alt="Edit"/></button>
-                <button className={styles.button}><Image src={Trash} alt="Trash"/></button>
+                <button className={styles.button} onClick={handleEdit}>
+                    <Image src={Edit} alt="Editar"/>
+                </button>
+                <button className={styles.button} onClick={handleDelete}>
+                    <Image src={Trash} alt="Excluir"/>
+                </button>
             </div>  
         </li>
     );

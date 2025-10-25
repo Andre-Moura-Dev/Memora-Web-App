@@ -12,7 +12,7 @@ import Avatar from "@/assets/user-profile.png";
 import Shield from "@/assets/shield.png";
 import Icon from "@/assets/image-add.png";
 
-export default function main() {
+export default function Home() {
     const [page, setPage] = useState("administrador");
     const [icon, setIcon] = useState("Avatar");
 
@@ -23,7 +23,7 @@ export default function main() {
     } else if(page == "permissao") {
         ActualPage = permissoes;
     } else if(page == "publicacao") {
-        ActualPage = publications;
+        ActualPage = publications;    
     }
 
     return (
@@ -34,22 +34,21 @@ export default function main() {
 
             <div className={styles.content}>
               <nav className={styles.navbar}>
-                <h1 className={styles.option} onClick={() => {setPage("administrador"), setIcon("Avatar")}}>Administradores</h1>
-                <h1 className={styles.option} onClick={() => {setPage("permissao"), setIcon("Shield")}}>Permissões</h1>
-                <h1 className={styles.option} onClick={() => {setPage("publicacao"), setIcon("Icon")}}>Publicações</h1>
+                <h1 className={`${styles.option} ${page === 'administrador' ? styles.selected : ''}`} onClick={() => {setPage("administrador"), setIcon("Avatar")}}>Administradores</h1>
+                <h1 className={`${styles.option} ${page === 'permissao' ? styles.selected : ''}`} onClick={() => {setPage("permissao"), setIcon("Shield")}}>Permissões</h1>
+                <h1 className={`${styles.option} ${page === 'publicacao' ? styles.selected : ''}` } onClick={() => {setPage("publicacao"), setIcon("Icon")}}>Publicações</h1>
               </nav>
-              <Menu page={page} />
+              <Menu page={page}/>
                 <ul className={styles.data}>
-
-
-                {
-                  ActualPage.map((item) =>
-                    <List  key={item.id} icon={icon} name={item.title} />
-                  )
-                }
-
-
-                  
+                  {ActualPage.map((item) => (
+                    <List 
+                      key={item.id} 
+                      icon={icon} 
+                      name={item.title} 
+                      id={item.id} 
+                      page={page} 
+                    />
+                  ))}
                 </ul>
             </div>
           </div>

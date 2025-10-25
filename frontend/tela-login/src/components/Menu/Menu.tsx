@@ -3,36 +3,54 @@ import Image from "next/image";
 import Add from "@/assets/add-square.png";
 import Search from "@/assets/search.png";
 import Input from "../Input/Input";
-
+import { useRouter } from "next/navigation";
 
 type Menuprops = {
-    page: string
+    page: string;
 }
 
 
-export default function Menu({page}: Menuprops) {
+export default function Menu({ page }: Menuprops) {
+    const router = useRouter(); 
 
-    let title = "Cadastrar admnistrador";
+    let title = "";
+    let basePath = "";
 
-
-    if(page == "administrador") {
-        title = "Cadastrar admnistrador";
-    } else if(page == "permissao") {
-        title = "Criar nova permissão";
-    } else if(page == "publicacao") {
-        title = "Adicionar nova publicação";
+    switch (page) {
+        case "administrador":
+            title = "Cadastrar administrador";
+            basePath = "/administradores";
+        break;
+        case "permissao":
+            title = "Criar nova permissão";
+            basePath = "/permissoes";
+        break;
+        case "publicacao":
+            title = "Adicionar nova publicação";
+            basePath = "/publicacoes";
+        break;
+            default:
+            basePath = "/";
     }
+
+    const handleRegister = () => {
+        router.push(`${basePath}/cadastrar`);
+    };
 
     return (
         <nav className={styles.container}>
-            <button className={styles.register}>
-                <Image src={Add} alt="Register" width={30} height={30}/>
+            <button className={styles.register} onClick={handleRegister}>
+                <Image src={Add} alt="Registrar" width={30} height={30}/>
                 <p className={styles.label}>{title}</p>
             </button>
 
             <div className={styles.search}>
-                <Image src={Search} alt="Search" width={25} height={25}/>
-                <Input label="" placeholder="Buscar administrador" className={styles.inputSearch}/>
+                <Image src={Search} alt="Buscar" width={25} height={25}/>
+                <Input 
+                    label="" 
+                    placeholder={`Buscar ${page === "administrador" ? "administrador" : page === "permissao" ? "permissão" : "publicação"}`} 
+                    className={styles.inputSearch} 
+                />
             </div>
         </nav>
     );

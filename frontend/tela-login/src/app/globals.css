@@ -2,8 +2,10 @@
   --primary-color: #2D8A87;
   --primary-font-color: #0000007A;
   --bg-header: #113d3b;
-  --textColor: #fff;
+  --text-color: #fff;
+  --page-background: #f3f3f3;
   --font-montserrat: var(--font-montserrat);
+  --font-poppins: var(--font-poppins);
 }
 
 html,
