@@ -8,17 +8,17 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name_a, email, password_a, permission_id } = req.body;
+    const { nome, email, senha, nivel_acesso } = req.body;
     
-    if (!password_a) {
+    if (!senha) {
       return res.status(400).json({ error: 'Senha é obrigatória' });
     }
 
     const admin = await AdministratorService.registerAdministrator({
       name_a,
       email,
-      password_a,
-      permission_id
+      senha,
+      nivel_acesso
     });
     
     res.status(201).json(admin);
@@ -34,13 +34,13 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password_a } = req.body;
+    const { email, senha } = req.body;
     
-    if (!email || !password_a) {
+    if (!email || !senha) {
       return res.status(400).json({ error: 'Email e senha são obrigatórios' });
     }
 
-    const result = await AdministratorService.loginAdministrator(email, password_a);
+    const result = await AdministratorService.loginAdministrator(email, senha);
     res.json(result);
   } catch (error) {
     if (error.message === 'Administrador não encontrado' || 
@@ -67,7 +67,8 @@ export const updateProfile = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const admin = await AdministratorService.updateAdministrator(req.user.id, req.body);
+    const { nome, email, nivel_acesso } = req.body;
+    const admin = await AdministratorService.updateAdministrator(req.user.id, { nome, email, nivel_acesso });
     res.json(admin);
   } catch (error) {
     next(error);

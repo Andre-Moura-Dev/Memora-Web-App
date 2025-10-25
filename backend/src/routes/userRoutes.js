@@ -1,13 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { 
-  register, 
-  login, 
-  getProfile, 
-  updateProfile, 
-  updatePassword, 
-  deleteProfile 
-} from '../controllers/authController.js';
+import UserController from '../controllers/userController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -18,45 +11,43 @@ router.post(
   [
     check('nome', 'Nome é obrigatório').not().isEmpty(),
     check('email', 'Por favor, inclua um email válido').isEmail(),
-    check('senha', 'A senha deve ter ao menos 6 caracteres').isLength({ min: 6 }),
-    check('nivel_acesso', 'Nível de acesso é obrigatório').not().isEmpty()
+    check('senha', 'A senha deve ter ao menos 6 caracteres').isLength({ min: 6 })
   ],
-  register
+  UserController.register
 );
 
 router.post(
   '/login',
   [
-    check('email', 'Por favor, inclua um email válido').isEmail().normalizeEmail(),
+    check('email', 'Por favor, inclua um email válido').isEmail(),
     check('senha', 'A senha é obrigatória').not().isEmpty()
   ],
-  login
+  UserController.login
 );
 
 // rotas protegidas
-router.get('/profile', authMiddleware, getProfile);
+router.get('/:id', authMiddleware, UserController.getById);
 
 router.put(
-  '/profile',
+  '/:id',
   authMiddleware,
   [
     check('nome', 'Nome é obrigatório').optional().not().isEmpty(),
-    check('email', 'Por favor, inclua um email válido').optional().isEmail(),
-    check('nivel_acesso', 'Nível de acesso é obrigatório').optional().not().isEmpty()
+    check('email', 'Por favor, inclua um email válido').optional().isEmail()
   ],
-  updateProfile
+  UserController.update
 );
 
 router.put(
-  '/password',
+  '/:id/password',
   authMiddleware,
   [
     check('currentPassword', 'Senha atual é obrigatória').not().isEmpty(),
     check('newPassword', 'Nova senha precisa ter ao menos 6 caracteres').isLength({ min: 6 })
   ],
-  updatePassword
+  UserController.updatePassword
 );
 
-router.delete('/profile', authMiddleware, deleteProfile);
+router.delete('/:id', authMiddleware, UserController.delete);
 
 export default router;

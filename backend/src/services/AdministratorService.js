@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import config from '../../config/config.js';
 
 class AdministratorService {
-  static async registerAdministrator({ name_a, email, password_a, permission_id }) {
-    if (!password_a) {
+  static async registerAdministrator({ nome, email, senha, nivel_acesso }) {
+    if (!senha) {
       throw new Error('Senha é obrigatória');
     }
 
@@ -13,12 +13,12 @@ class AdministratorService {
       throw new Error('Esse email já está sendo utilizado');
     }
     
-    return await Administrator.create({ name_a, email, password_a, permission_id });
+    return await Administrator.create({ nome, email, senha, nivel_acesso });
   }
 
-  static async loginAdministrator(email, password_a) {
+  static async loginAdministrator(email, senha) {
   // Validate inputs
-  if (!email || !password_a) {
+  if (!email || !senha) {
     throw new Error('Email e senha são obrigatórios');
   }
 
@@ -27,23 +27,28 @@ class AdministratorService {
     throw new Error('Administrador não encontrado');
   }
 
-  if (!admin.password_a) {
+  if (!admin.senha_hash) {
     throw new Error('Registro de administrador inválido');
   }
 
-  const isMatch = await Administrator.comparePasswords(password_a, admin.password_a);
+  const isMatch = await Administrator.comparePasswords(senha, admin.senha_hash);
   if (!isMatch) {
     throw new Error('Credenciais inválidas');
   }
 
   const token = jwt.sign(
-    { id: admin.id, email: admin.email, permission: admin.permission_name },
+    {
+      id_administradores: admin.id_administradores,
+      id_usuario: admin.id_usuario,
+      email: admin.email,
+      nivel_acesso: admin.nivel_acesso
+    },
     config.jwt.secret,
     { expiresIn: config.jwt.expiresIn }
   );
 
   // omitir dados sensíveis da resposta
-  const { password_a: _, ...adminData } = admin;
+  const { senha_hash: _, ...adminData } = admin;
   return { admin: adminData, token };
 }
 

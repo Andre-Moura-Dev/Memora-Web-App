@@ -2,23 +2,35 @@ import db from '../../config/database.js';
 import bcrypt from 'bcrypt';
 
 class Administrator {
-  static async create({ name_a, email, password_a, permission_id }) {
+  static async create({ nome, email, senha, nivel_acesso }) {
 
-    if (!password_a || typeof password_a !== 'string') {
+    if (!senha || typeof senha !== 'string') {
       throw new Error('Senha inválida');
     }
 
     const hashedPassword = await bcrypt.hash(password_a, 10);
-    const [result] = await db.query(
-      'INSERT INTO Administrator (name_a, email, password_a, permission_id) VALUES (?, ?, ?, ?)',
-      [name_a, email, hashedPassword, permission_id]
+    
+    const [userResult] = await db.query(
+      'INSERT INTO Usuarios (nome, email, senha_hash, criado_em) VALUES (?, ?, ?, NOW())',
+      [nome, email, hashedPassword]
     );
-    return this.findById(result.insertId);
+
+    const userId = userResult.insertId;
+
+    const [adminResult] = await db.query(
+      'INSERT INTO Administradores (nivel_acesso, ID_Usuarios) VALUES (?, ?)',
+      [nivel_acesso, userId]
+    );
+
+    return this.findById(adminResult.insertId);
   }
 
   static async findById(id) {
     const [rows] = await db.query(
-      'SELECT * FROM Administrator WHERE id = ?',
+      `SELECT a.id_administradores, a.nivel_acesso, u.id_usuarios, u.nome, u.email, u.criado_em
+       FROM Administradores a
+       JOIN Usuarios u ON a.ID_Usuarios = u.id_usuarios
+       WHERE A.id_administradores = ?`,
       [id]
     );
     return rows[0];
@@ -26,45 +38,78 @@ class Administrator {
 
   static async findByEmail(email) {
     const [rows] = await db.query(
-      'SELECT * FROM Administrator WHERE email = ?',
+      `SELECT a.id_administradores, a.nivel_acesso, u.id_usuarios, u.nome, u.email, u.senha_hash
+       FROM Administradores a
+       JOIN Usuarios u ON a.ID_Usuarios = u.id_usuarios
+       WHERE u.email = ?`,
       [email]
     );
     return rows[0];
   }
 
-  static async update(id, { name_a, email, permission_id }) {
+  static async update(id, { nome, email, nivel_acesso }) {
+
+    const [adminRow] = await db.query(
+      'SELECT ID_Usuarios FROM Administradores WHERE id_administradores = ?',
+      [id]
+    );
+
+    if (adminRow.length === 0) throw new Error('Administrador não encontrado');
+
+    const userId = adminRow[0].ID_Usuarios;
+
     await db.query(
-      'UPDATE Administrator SET name_a = ?, email = ?, permission_id = ? WHERE id = ?',
-      [name_a, email, permission_id, id]
+      'UPDATE Usuarios SET nome = ?, email = ? WHERE id_usuarios = ?',
+      [nome, email, userId]
+    );
+
+    await db.query(
+      'UPDATE Administradores SET nivel_acesso = ? WHERE id_administradores = ?',
+      [nivel_acesso, id]
     );
     return this.findById(id);
   }
 
   static async updatePassword(id, newPassword) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const [adminRow] = await db.query(
+      'SELECT ID_Usuarios FROM Administradores WHERE id_administradores = ?',
+      [id]
+    );
+
+    if (adminRow.length === 0) throw new Error('Administrador não encontrado');
+
+    const userId = adminRow[0].ID_Usuarios;
+
     await db.query(
-      'UPDATE Administrator SET password_a = ? WHERE id = ?',
-      [hashedPassword, id]
+      'UPDATE Usuarios SET senha_hash = ? WHERE id_usuarios = ?',
+      [hashedPassword, userId]
     );
   }
 
   static async delete(id) {
-    await db.query('DELETE FROM Administrator WHERE id = ?', [id]);
+    const [adminRow] = await db.query(
+      'SELECT ID_Usuarios FROM Administradores WHERE id_administradores = ?',
+      [id]
+    );
+
+    if (adminRow.length === 0) throw new Error('Administrador não encontrado');
+
+    const userId = adminRow[0].ID_Usuarios;
+
+    await db.query('DELETE FROM Administradores WHERE id_administradores = ?', [id]);
+
+    await db.query('DELETE FROM Usuarios WHERE id_usuario = ?', [userId]);
   }
 
   static async comparePasswords(plainPassword, hashedPassword) {
 
-    if (!plainPassword || !hashedPassword) {
-      throw new Error('Senha e hash são necessários para fazer a comparação');
+    if(!plainPassword || !hashedPassword) {
+      throw new Error('Senha e hash são necessárias para fazer a comparação');
     }
-
-    try {
-      return await bcrypt.compare(plainPassword, hashedPassword);
-    } catch (error) {
-      console.error('Erro na comparação de senha:', error);
-      throw new Error('Erro durante comparação de senha');
-    }
+    return bcrypt.compare(plainPassword, hashedPassword);
   }
 }
 
-export default Administrator
+export default Administrator;
