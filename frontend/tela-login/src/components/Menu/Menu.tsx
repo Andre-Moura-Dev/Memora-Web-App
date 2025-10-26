@@ -4,6 +4,7 @@ import Add from "@/assets/add-square.png";
 import Search from "@/assets/search.png";
 import Input from "../Input/Input";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type Menuprops = {
     page: string;
@@ -11,25 +12,32 @@ type Menuprops = {
 
 
 export default function Menu({ page }: Menuprops) {
-    const router = useRouter(); 
+    const router = useRouter();
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setSearchTerm(event.target.value);
+        console.log("Termo de busca:", event.target.value);
+    }
 
     let title = "";
     let basePath = "";
 
     switch (page) {
-        case "administrador":
+        case "administradores":
             title = "Cadastrar administrador";
             basePath = "/administradores";
-        break;
-        case "permissao":
+            break;
+        case "permissoes":
             title = "Criar nova permissão";
             basePath = "/permissoes";
-        break;
-        case "publicacao":
+            break;
+        case "publicacoes":
             title = "Adicionar nova publicação";
             basePath = "/publicacoes";
-        break;
-            default:
+            break;
+        default:
             basePath = "/";
     }
 
@@ -48,8 +56,9 @@ export default function Menu({ page }: Menuprops) {
                 <Image src={Search} alt="Buscar" width={25} height={25}/>
                 <Input 
                     label="" 
-                    placeholder={`Buscar ${page === "administrador" ? "administrador" : page === "permissao" ? "permissão" : "publicação"}`} 
-                    className={styles.inputSearch} 
+                    placeholder={`Buscar ${page === "administradores" ? "administradores" : page === "permissoes" ? "permissoes" : "publicacoes"}`} 
+                    className={styles.inputSearch}
+                    onChange={handleSearchChange}
                 />
             </div>
         </nav>

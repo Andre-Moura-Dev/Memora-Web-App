@@ -11,19 +11,29 @@ import { publications } from "@/utils/publicacoes";
 import Avatar from "@/assets/user-profile.png";
 import Shield from "@/assets/shield.png";
 import Icon from "@/assets/image-add.png";
+import NavBar from "@/components/NavBar/NavBar";
 
 export default function Home() {
-    const [page, setPage] = useState("administrador");
-    const [icon, setIcon] = useState("Avatar");
+    
+    const [newPage, setNewPage] = useState("administradores");
+    const [newIcon, setNewIcon] = useState("Avatar");
 
     let ActualPage = admninistradores;
+    let page = "administradores";
+    let icon = "Avatar";
 
-    if(page == "administrador") {
+    if(newPage === "administradores") {
         ActualPage = admninistradores;
-    } else if(page == "permissao") {
+        page = "administradores";
+        icon = "Avatar";
+    } else if(newPage === "permissoes") {
         ActualPage = permissoes;
-    } else if(page == "publicacao") {
-        ActualPage = publications;    
+        page = "permissoes";
+        icon = "Shield";
+    } else if(newPage === "publicacoes") {
+        ActualPage = publications;
+        page = "publicacoes";
+        icon = "Icon";
     }
 
     return (
@@ -33,12 +43,9 @@ export default function Home() {
             <GreenLeftBar />
 
             <div className={styles.content}>
-              <nav className={styles.navbar}>
-                <h1 className={`${styles.option} ${page === 'administrador' ? styles.selected : ''}`} onClick={() => {setPage("administrador"), setIcon("Avatar")}}>Administradores</h1>
-                <h1 className={`${styles.option} ${page === 'permissao' ? styles.selected : ''}`} onClick={() => {setPage("permissao"), setIcon("Shield")}}>Permissões</h1>
-                <h1 className={`${styles.option} ${page === 'publicacao' ? styles.selected : ''}` } onClick={() => {setPage("publicacao"), setIcon("Icon")}}>Publicações</h1>
-              </nav>
-              <Menu page={page}/>
+              <NavBar page={setNewPage} icon={setNewIcon} pageTest={newPage} />
+
+              <Menu page={newPage}/>
                 <ul className={styles.data}>
                   {ActualPage.map((item) => (
                     <List 

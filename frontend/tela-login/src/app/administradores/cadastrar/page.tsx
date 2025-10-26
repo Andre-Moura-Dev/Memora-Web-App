@@ -8,6 +8,8 @@ import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import Input from "@/components/Input/Input";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button/Button";
+import React from "react";
+import InputMain from "@/components/InputMain/InputMain";
 
 export default function AdminPage() {
 
@@ -18,7 +20,37 @@ export default function AdminPage() {
         { label: "Confirmação da senha", name: "confirmaSenha", type: "password", key: 4 }
     ];
 
-    let options = ["","Administrador", "Editor", "Visualizador"];
+    let options = ["","Nível 1", "Nível 2", "Nível 3", "Nível 4"];
+
+    const imageExclamation = Exclamation;
+    
+    // Lógica para lidar com o envio do formulário
+    function handleSubmit(event: React.FormEvent) {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target as HTMLFormElement);
+
+        if (!formData.get("nome") || !formData.get("email") || !formData.get("senha") || !formData.get("confirmaSenha") || !formData.get("nivelAcesso")) {
+            alert("Por favor, preencha todos os campos obrigatórios!");
+            return;
+        }
+
+        if (formData.get("senha") !== formData.get("confirmaSenha")) {
+            alert("As senhas não coincidem!");
+            return;
+        }
+
+        const user = {
+            nome: formData.get("nome"),
+            email: formData.get("email"),
+            senha: formData.get("senha"),
+            confirmaSenha: formData.get("confirmaSenha"),
+            nivelAcesso: formData.get("nivelAcesso"),
+        };
+
+        console.log("Usuário cadastrado:", user);
+        alert("Administrador cadastrado com sucesso!");
+    }
 
     return (
         <>
@@ -34,18 +66,20 @@ export default function AdminPage() {
                             <h2 className={styles.title}>Cadastrar Administrador</h2>
                         </div>
 
-                        <form className={styles.form}>
+                        <form className={styles.form} onSubmit={handleSubmit}>
                             {inputs.map((input) => (
-                                <>
-                                    <div className={styles.formItem} key={input.key}>
+                                <React.Fragment key={input.key}>
+                                    {/* <div className={styles.formItem}>
                                         <label className={styles.label}>{input.label}<span style={{ color: "red" }}>*</span></label>
                                         <input type={input.type} name={input.name} className={`${styles.input} ${input.key === 3 || input.key === 4 ? styles.changeWidth : ''}`} />
-                                    </div>
-                                    
+                                    </div> */}
+
+                                    <InputMain input={input} />
+
                                     {input.key === 3 && (
-                                        <div className={styles.textsPasswords} key={input.key}>
+                                        <div className={styles.textsPasswords}>
                                             <div className={styles.exclamationIcon}>
-                                                <Image src={Exclamation} alt="Exclamação" width="11" height="11"/>
+                                                <Image src={imageExclamation} alt="Exclamação" width="11" height="11"/>
                                                 <p className={styles.textPassword}>A senha deve ter pelo menos 8 caracteres</p>
                                             </div>
                                             <p className={styles.textPassword}><b>Dicas de segurança:</b></p>
@@ -53,13 +87,14 @@ export default function AdminPage() {
                                             <p className={styles.textPassword}>Não use caracteres iguais em sequência</p>
                                         </div>
                                     )}
-                                </>
+                                </React.Fragment>
                             ))}
 
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Nível de Acesso<span style={{ color: "red" }}>*</span></label>
                                 <select name="nivelAcesso" className={`${styles.input} ${styles.changeWidth}`}>
-                                    {options.map((option) => (
+                                    <option defaultValue={""}>Selecione o nível de acesso</option>
+                                    {options.slice(1).map((option) => (
                                         <option key={option} value={option}>{option}</option>
                                     ))}
                                 </select>

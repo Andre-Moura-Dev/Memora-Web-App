@@ -19,7 +19,6 @@ type ListProps = {
 export default function List({ icon, name, id, page }: ListProps) {
     const router = useRouter();
 
-
     let image = Avatar;
 
     if(icon == "Avatar") {
@@ -31,11 +30,11 @@ export default function List({ icon, name, id, page }: ListProps) {
     }
 
     let basePath = "";
-    if (page === "administrador") {
+    if (page === "administradores") {
         basePath = "/administradores";
-    } else if (page === "permissao") {
+    } else if (page === "permissoes") {
         basePath = "/permissoes";
-    } else if (page === "publicacao") {
+    } else if (page === "publicacoes") {
         basePath = "/publicacoes";
     }
 
