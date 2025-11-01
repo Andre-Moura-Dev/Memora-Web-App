@@ -30,7 +30,12 @@ export default function AdminPage() {
         
         const formData = new FormData(event.target as HTMLFormElement);
 
-        if (!formData.get("nome") || !formData.get("email") || !formData.get("senha") || !formData.get("confirmaSenha") || !formData.get("nivelAcesso")) {
+        if (
+            !formData.get("nome") || 
+            !formData.get("email") || 
+            !formData.get("senha") || 
+            !formData.get("confirmaSenha") || 
+            !formData.get("nivelAcesso")) {
             alert("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
