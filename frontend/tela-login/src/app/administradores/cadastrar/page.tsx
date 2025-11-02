@@ -14,10 +14,10 @@ import InputMain from "@/components/InputMain/InputMain";
 export default function AdminPage() {
 
     let inputs = [
-        { label: "Nome", name: "nome", type: "text", key: 1 },
-        { label: "Email", name: "email", type: "email", key: 2 },
-        { label: "Senha", name: "senha", type: "password", key: 3 },
-        { label: "Confirmação da senha", name: "confirmaSenha", type: "password", key: 4 }
+        { label: "Nome", name: "nome", type: "text", key: 1, typeForm: "admin" },
+        { label: "Email", name: "email", type: "email", key: 2, typeForm: "admin" },
+        { label: "Senha", name: "senha", type: "password", key: 3, typeForm: "admin" },
+        { label: "Confirmação da senha", name: "confirmaSenha", type: "password", key: 4, typeForm: "admin" }
     ];
 
     let options = ["","Nível 1", "Nível 2", "Nível 3", "Nível 4"];
