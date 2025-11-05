@@ -7,6 +7,7 @@ interface InputMainProps extends ComponentProps<"input">  {
         label: string;
         name: string;
         type: string;
+        value?: string;
         key: number;
         typeForm: string;
     }
