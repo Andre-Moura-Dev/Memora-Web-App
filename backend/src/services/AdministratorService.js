@@ -1,89 +1,118 @@
-import Administrator from '../models/AdministratorModel.js';
+import Administrator from '../models/Administrator.js';
 import jwt from 'jsonwebtoken';
 import config from '../../config/config.js';
+import bcrypt from 'bcrypt';
 
 class AdministratorService {
-  static async registerAdministrator({ nome, email, senha, nivel_acesso }) {
-    if (!senha) {
-      throw new Error('Senha é obrigatória');
+  //Cadastro de administrador
+  static async registerAdministrator({ nome, email, senha, nivel_acesso, tipo_usuario }) {
+    if (!nome || !email || !senha || !nivel_acesso || !tipo_usuario) {
+      throw new Error('Todos os campos são obrigatórios.');
     }
 
+    // Verifica se já existe um administrador com o mesmo email
     const existingAdmin = await Administrator.findByEmail(email);
     if (existingAdmin) {
-      throw new Error('Esse email já está sendo utilizado');
+      throw new Error('Esse email já está sendo utilizado.');
     }
-    
-    return await Administrator.create({ nome, email, senha, nivel_acesso });
+
+    // Cria o novo administrador com senha criptografada
+    const newAdmin = await Administrator.create({
+      nome,
+      email,
+      senha,
+      nivel_acesso,
+      tipo_usuario,
+    });
+
+    return newAdmin;
   }
 
+  //Login de administrador
   static async loginAdministrator(email, senha) {
-  // Validate inputs
-  if (!email || !senha) {
-    throw new Error('Email e senha são obrigatórios');
-  }
-
-  const admin = await Administrator.findByEmail(email);
-  if (!admin) {
-    throw new Error('Administrador não encontrado');
-  }
-
-  if (!admin.senha_hash) {
-    throw new Error('Registro de administrador inválido');
-  }
-
-  const isMatch = await Administrator.comparePasswords(senha, admin.senha_hash);
-  if (!isMatch) {
-    throw new Error('Credenciais inválidas');
-  }
-
-  const token = jwt.sign(
-    {
-      id_administradores: admin.id_administradores,
-      id_usuario: admin.id_usuario,
-      email: admin.email,
-      nivel_acesso: admin.nivel_acesso
-    },
-    config.jwt.secret,
-    { expiresIn: config.jwt.expiresIn }
-  );
-
-  // omitir dados sensíveis da resposta
-  const { senha_hash: _, ...adminData } = admin;
-  return { admin: adminData, token };
-}
-
-  static async getAdministratorById(id) {
-    return await Administrator.findById(id);
-  }
-
-  static async updateAdministrator(id, updateData) {
-    if (updateData.email) {
-      const existingAdmin = await Administrator.findByEmail(updateData.email);
-      if (existingAdmin && existingAdmin.id !== parseInt(id)) {
-        throw new Error('Esse email já está sendo utilizado');
-      }
+    if (!email || !senha) {
+      throw new Error('Email e senha são obrigatórios.');
     }
-    
-    return await Administrator.update(id, updateData);
+
+    const admin = await Administrator.findByEmail(email);
+    if (!admin) {
+      throw new Error('Administrador não encontrado.');
+    }
+
+    // Verifica a senha com bcrypt
+    const isMatch = await bcrypt.compare(senha, admin.senha);
+    if (!isMatch) {
+      throw new Error('Credenciais inválidas.');
+    }
+
+    // Gera o token JWT
+    const token = jwt.sign(
+      {
+        id_administradores: admin.id_administradores,
+        email: admin.email,
+        nivel_acesso: admin.nivel_acesso,
+        tipo_usuario: admin.tipo_usuario,
+      },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
+    );
+
+    // Remove a senha da resposta
+    const { senha: _, ...adminData } = admin;
+
+    return { admin: adminData, token };
   }
 
+  //Busca administrador por ID
+  static async getAdministratorById(id) {
+    const admin = await Administrator.findById(id);
+    if (!admin) throw new Error('Administrador não encontrado.');
+    return admin;
+  }
+
+  //Atualiza dados do administrador
+  static async updateAdministrator(id, updateData) {
+    const { nome, email, nivel_acesso, tipo_usuario } = updateData;
+
+    if (!nome || !email || !nivel_acesso || !tipo_usuario) {
+      throw new Error('Campos obrigatórios ausentes.');
+    }
+
+    // Evita duplicidade de email
+    const existingAdmin = await Administrator.findByEmail(email);
+    if (existingAdmin && existingAdmin.id_administradores !== parseInt(id)) {
+      throw new Error('Esse email já está sendo utilizado.');
+    }
+
+    return await Administrator.update(id, { nome, email, nivel_acesso, tipo_usuario });
+  }
+
+  //Atualiza senha
   static async updateAdministratorPassword(id, currentPassword, newPassword) {
     const admin = await Administrator.findById(id);
     if (!admin) {
-      throw new Error('Administrador não encontrado');
+      throw new Error('Administrador não encontrado.');
     }
 
-    const isMatch = await Administrator.comparePasswords(currentPassword, admin.password_a);
+    const isMatch = await bcrypt.compare(currentPassword, admin.senha);
     if (!isMatch) {
-      throw new Error('Senha atual está incorreta');
+      throw new Error('Senha atual incorreta.');
     }
 
     await Administrator.updatePassword(id, newPassword);
+    return { message: 'Senha atualizada com sucesso.' };
   }
 
+  //Exclui administrador
   static async deleteAdministrator(id) {
-    return await Administrator.delete(id);
+    const admin = await Administrator.findById(id);
+    if (!admin) {
+      throw new Error('Administrador não encontrado.');
+    }
+
+    await Administrator.delete(id);
+    return { message: 'Administrador removido com sucesso.' };
   }
 }
 
-export default AdministratorService
+export default AdministratorService;
