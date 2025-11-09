@@ -6,7 +6,6 @@ import Add from "../../../assets/add-square.png";
 import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import InputMain from "@/components/InputMain/InputMain";
 import Button from "@/components/Button/Button";
-import React from "react";
 
 export default function PublicationPage() {
 
@@ -29,21 +28,24 @@ export default function PublicationPage() {
         
         const contentContainer = document.querySelector('[data-name="content"]');
 
-        let content: string[] = [];
-        contentContainer?.childNodes.forEach((child) => {
+        let content: string = '';
 
-            const text = child.textContent;
-            if (text && !text.includes('Adicionar')) {
-                content.push(text);
-                // console.log(child.firstChild);
-            }
+        content = contentContainer?.innerHTML || '';
 
-        });
+        // contentContainer?.childNodes.forEach((child) => {
+
+        //     const text = child.textContent;
+        //     if (text && !text.includes('Adicionar')) {
+        //         content = content.concat(text);
+        //         // console.log(child.firstChild);
+        //     }
+
+        // });
 
 
-        formData.append("conteudo", content.join('\n'));
+        formData.append("conteudo", content);
 
-        // console.log(content);
+        console.log(content);
         console.log("Dados da publicação:", Object.fromEntries(formData));
         
         if (
@@ -161,7 +163,7 @@ export default function PublicationPage() {
                                 <label className={styles.label}>Conteúdo:</label>
                                 {/* <textarea name="conteudo" className={`${styles.input} ${styles.textarea}`} /> */}
 
-                                <div className={styles.textAreaContainer} data-name='content'>
+                                <div className={styles.textAreaContainer} data-name='content-container'>
 
                                     <div className={styles.optionsContainer}>
                                         {options.map((option) => (
@@ -170,12 +172,17 @@ export default function PublicationPage() {
                                             </div>
                                         ))}
                                     </div>
+                                    <div className={styles.textArea} data-name="content" contentEditable={true}></div>
                                 </div>
                             </div>
 
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Status:</label>
-                                <input type="text" className={`${styles.input} ${styles.changeWidth}`} name="status" />
+                                <select className={`${styles.input} ${styles.changeWidth}`} name="status">
+                                    <option defaultValue="Rascunho">Rascunho</option>
+                                    <option value="publicado">Publicado</option>
+                                    <option value="arquivado">Arquivado</option>
+                                </select>
                             </div>
                             <Button label="Adicionar publicação" variant="primary" type="submit" />
                         </form>
