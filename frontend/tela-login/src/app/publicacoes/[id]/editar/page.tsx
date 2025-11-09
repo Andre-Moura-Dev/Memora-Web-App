@@ -3,98 +3,90 @@ import { useEffect, useState } from "react";
 import styles from "./editarPublicacoes.module.css"; 
 import Header from "../../../../components/Header/header";
 import Image from "next/image";
-import Edit from "../../../../assets/edit.png"; 
+import Edit from "../../../../assets/edit.png";
 import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import InputMain from "@/components/InputMain/InputMain";
 import Button from "@/components/Button/Button";
-import { useParams } from 'next/navigation';
 
-export default function EditPublicationPage() {
-    const { id } = useParams();
+interface publicationProps {
+    id: number;
+    id_admin?: number;
+    titulo: string;
+    conteudo: string;
+    categoria: string;
+    data_atualizacao?: Date | string;
+    data_publicacao: Date | string;
+    curtidas?: number;
+    comentarios?: number;
+    status: string;
+}
 
-    const [titulo, setTitulo] = useState("");
-    const [categoria, setCategoria] = useState("");
-    const [dataPublicacao, setDataPublicacao] = useState("");
-    const [conteudo, setConteudo] = useState<string[]>([]);
-    const [status, setStatus] = useState("");
+export default function EditPublicationPage(publicationType: publicationProps) {
+    const [publication, setPublication] = useState<publicationProps>();
 
-    
-    useEffect(() => {
-        const fetchPublication = async () => {
-
-            
-            setTitulo("Título Original da Publicação");
-            setCategoria("Notícias");
-            setDataPublicacao("2025-03-10");
-            setStatus("Publicado");
-            
-            setConteudo([
-                "Este é o primeiro parágrafo do conteúdo original.",
-                "Este é um subtítulo editado.",
-                "Este é o último parágrafo."
-            ]);
-        };
-
-        fetchPublication();
-    }, [id]); 
-
-    
-    useEffect(() => {
-        const contentContainer = document.querySelector('[data-name="content"]');
-        if (contentContainer) {
-            contentContainer.innerHTML = ''; 
-
-            
-            conteudo.forEach((item, index) => {
-                const p = document.createElement('p'); 
-                p.className = styles.contentText; 
-                p.textContent = item;
-                p.contentEditable = 'true'; 
-                p.dataset.index = index.toString(); 
-                contentContainer.appendChild(p);
-            });
-        }
-    }, [conteudo]); 
-
-
-    const InputTitle = { label: "Título:", name: "titulo", type: "text", key: 1, typeForm: "publication" };
-    const InputDate = { label: "Data de Publicação:", name: "dataPublicacao", type: "date", key: 3, typeForm: "publication" };
+    let InputTitle = { label: "Título:", name: "titulo", value: publication?.titulo, type: "text", key: 1, typeForm: "publication" };
+    // const InputStatus = { label: "Status", name: "status", type: "text", key: 4, typeForm: "publication" };
+    // const InputContent = { label: "Conteúdo:", name: "content", type: "textarea", key: 1, typeForm: "publication" };
+    // const InputCategory = { label: "Categoria", name: "categoria", type: "text", key: 3, typeForm: "publication" };
+    let InputDate = { label: "Data de Publicação:", name: "dataPublicacao", value: publication?.data_publicacao, type: "text", key: 3, typeForm: "publication" };
 
     let categories = ["", "Notícias", "Eventos", "Comunicados", "Outros"];
 
     const options = ["Adicionar Cabeçalho", "Adicionar Subtítulo", "Adicionar Texto", "Adicionar Link", "Adicionar Imagem"];
 
+
+    function getPublication() {
+        // Simulação de uma chamada à API para obter os dados da publicação
+        const fetchedPublication: publicationProps = {
+            id: 1,
+            titulo: "Avanço da IA no Brasil",
+            conteudo: `<h2 contenteditable="true" class="undefined">Texto</h2><h3 contenteditable="true" class="undefined">textinho</h3>`,
+            categoria: "Notícias",
+            data_publicacao: "09-11-2025",
+            status: "Publicado",
+        };
+        setPublication(fetchedPublication);
+        console.log(fetchedPublication.data_publicacao);
+    }
+
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
 
+        
         const formData = new FormData(event.target as HTMLFormElement);
-
+        
         
         const contentContainer = document.querySelector('[data-name="content"]');
-        let content: string[] = [];
-        contentContainer?.childNodes.forEach((child) => {
-            const text = (child as HTMLElement).textContent;
-            if (text && !text.includes('Adicionar')) {
-                content.push(text);
-            }
-        });
 
-        formData.append("conteudo", content.join('\n'));
+        let content: string = '';
 
+        content = contentContainer?.innerHTML || '';
+
+        // contentContainer?.childNodes.forEach((child) => {
+
+        //     const text = child.textContent;
+        //     if (text && !text.includes('Adicionar')) {
+        //         content.push(text);
+        //         // console.log(child.firstChild);
+        //     }
+
+        // });
+
+
+        formData.append("conteudo", content);
+
+        console.log(content);
+        console.log("Dados da publicação:", Object.fromEntries(formData));
         
         if (
-            !formData.get("titulo") ||
-            !formData.get("categoria") ||
+            !formData.get("titulo") || 
+            !formData.get("categoria") || 
             !formData.get("dataPublicacao") ||
             !formData.get("conteudo") ||
-            !formData.get("status")
-        ) {
+            !formData.get("status")) {
             alert("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
-
-        
-        console.log("Dados atualizados da publicação:", Object.fromEntries(formData));
 
         alert("Publicação atualizada com sucesso!");
     }
@@ -110,43 +102,44 @@ export default function EditPublicationPage() {
 
         option.classList.add(styles.AddButtonSelected);
 
-        if (!contentContainer) return;
 
-        let element: HTMLElement | undefined;
+        if (!contentContainer) return;
 
         switch (option.textContent) {
             case "Adicionar Cabeçalho":
-                element = document.createElement("h2");
-                element.contentEditable = "true";
-                element.className = styles.contentHeader;
-                element.textContent = "Novo Cabeçalho";
+                const header = document.createElement("h2");
+                header.contentEditable = "true";
+                header.className = styles.contentHeader;
+                header.textContent = "Novo Cabeçalho";
+                contentContainer.appendChild(header);
                 break;
 
             case "Adicionar Subtítulo":
-                element = document.createElement("h3");
-                element.contentEditable = "true";
-                element.className = styles.contentSubheader;
-                element.textContent = "Novo Subtítulo";
+                const subheader = document.createElement("h3");
+                subheader.contentEditable = "true";
+                subheader.className = styles.contentSubheader;
+                subheader.textContent = "Novo Subtítulo";
+                contentContainer.appendChild(subheader);
                 break;
 
             case "Adicionar Texto":
-                element = document.createElement("p");
-                element.contentEditable = "true";
-                element.className = styles.contentText;
-                element.textContent = "Digite seu texto aqui...";
+                const paragraph = document.createElement("p");
+                paragraph.contentEditable = "true";
+                paragraph.className = styles.contentText;
+                paragraph.textContent = "Digite seu texto aqui...";
+                contentContainer.appendChild(paragraph);
                 break;
 
             case "Adicionar Link":
-                const anchor = document.createElement("a");
-                anchor.contentEditable = "true";
-                anchor.className = styles.contentLink;
-                anchor.textContent = "Digite seu link aqui...";
-                anchor.href = "#";
-                element = anchor;
+                const link = document.createElement("a");
+                link.contentEditable = "true";
+                link.className = styles.contentLink;
+                link.textContent = "Digite seu link aqui...";
+                link.href = "#";
+                contentContainer.appendChild(link);
                 break;
 
             case "Adicionar Imagem":
-                
                 const imageInput = document.createElement("input");
                 imageInput.type = "file";
                 imageInput.accept = "image/*";
@@ -160,13 +153,14 @@ export default function EditPublicationPage() {
                         contentContainer.appendChild(img);
                     }
                 };
-                return;
+                break;
         }
-
-        if (!element) return;
-
-        contentContainer.appendChild(element);
     }
+
+    // Carregar os dados da publicação ao montar o componente
+    useEffect(() => {
+        getPublication();
+    }, []);
 
     return (
         <>
@@ -183,34 +177,37 @@ export default function EditPublicationPage() {
                         </div>
 
                         <form className={styles.form} onSubmit={handleSubmit}>
-                            {/* Input de Título - Preenchido com o estado */}
-                            <InputMain input={{...InputTitle, value: titulo}} onChange={(e) => setTitulo(e.target.value)} />
+                            <InputMain input={InputTitle} />
 
                             <div className={styles.formRow}>
+
                                 <div className={styles.formItem}>
                                     <label className={styles.label}>Categoria:<span style={{ color: "white" }}>*</span></label>
-                                    <select
-                                        name="categoria"
-                                        className={styles.input}
-                                        value={categoria} // Preenchido com o estado
-                                        onChange={(e) => setCategoria(e.target.value)} // Atualiza o estado
-                                    >
-                                        <option value="">Selecione a categoria</option>
+                                    <select name="categoria" className={styles.input}>
+
+                                        {
+                                            publication?.categoria ?
+                                                <option defaultValue={publication.categoria}>{publication.categoria}</option>
+                                                :
+                                                <option defaultValue={""}>Selecione a categoria</option>
+                                        }
+
                                         {categories.slice(1).map((categorie) => (
                                             <option key={categorie} value={categorie}>{categorie}</option>
                                         ))}
                                     </select>
                                 </div>
-                                {/* Input de Data - Preenchido com o estado */}
-                                <InputMain
-                                    input={{...InputDate, value: dataPublicacao}}
-                                    onChange={(e) => setDataPublicacao(e.target.value)}
-                                />
+                                <InputMain input={InputDate} />
+                                {/* <InputMain input={{ ...InputDate, value: publication?.titulo }} /> */}
                             </div>
 
+                            
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Conteúdo:</label>
-                                <div className={styles.textAreaContainer} data-name='content'>
+                                {/* <textarea name="conteudo" className={`${styles.input} ${styles.textarea}`} /> */}
+
+                                <div className={styles.textAreaContainer} data-name='content-container'>
+
                                     <div className={styles.optionsContainer}>
                                         {options.map((option) => (
                                             <div key={option} className={styles.AddButton} onClick={handleOption}>
@@ -218,20 +215,30 @@ export default function EditPublicationPage() {
                                             </div>
                                         ))}
                                     </div>
+
+                                    <div className={styles.textArea}  data-name="content" dangerouslySetInnerHTML={{ __html: publication?.conteudo || '' }}></div>
+
                                 </div>
                             </div>
 
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Status:</label>
-                                <input
-                                    type="text"
-                                    className={`${styles.input} ${styles.changeWidth}`}
-                                    name="status"
-                                    value={status} // Preenchido com o estado
-                                    onChange={(e) => setStatus(e.target.value)} // Atualiza o estado
-                                />
+                                <select className={`${styles.input} ${styles.changeWidth}`} name="status">
+
+
+                                    {
+                                        publication?.status ?
+                                            <option defaultValue={publication.status}>{publication.status}</option>
+                                            :
+                                            <option defaultValue="Rascunho">Rascunho</option>
+                                    }
+
+                                    <option value="Rascunho">Rascunho</option>
+                                    <option value="publicado">Publicado</option>
+                                    <option value="arquivado">Arquivado</option>
+                                </select>
                             </div>
-                            <Button label="Atualizar publicação" variant="primary" type="submit" />
+                            <Button label="Editar publicação" variant="primary" type="submit" />
                         </form>
                     </div>
                 </div>
