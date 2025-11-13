@@ -5,7 +5,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// criar permissão
+// Criar permissão
 router.post(
   '/',
   authMiddleware,
@@ -17,13 +17,16 @@ router.post(
   PermissionController.create
 );
 
-// listar todas permissões de um admin
+// Listar todas as permissões
+router.get('/', authMiddleware, PermissionController.getAll);
+
+// Listar todas as permissões de um admin
 router.get('/admin/:adminId', authMiddleware, PermissionController.getByAdmin);
 
-// buscar permissão por id
+// Buscar permissão por id
 router.get('/:id', authMiddleware, PermissionController.getById);
 
-// atualizar permissão
+// Atualizar permissão
 router.put(
   '/:id',
   authMiddleware,
@@ -34,7 +37,7 @@ router.put(
   PermissionController.update
 );
 
-// deletar permissão
+// Deletar permissão
 router.delete('/:id', authMiddleware, PermissionController.delete);
 
 export default router;

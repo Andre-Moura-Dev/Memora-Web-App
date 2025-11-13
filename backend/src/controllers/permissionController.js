@@ -8,7 +8,11 @@ class PermissionController {
       if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
       const { ID_Administradores, descricao, nivel_permissao } = req.body;
-      const permission = await PermissionService.createPermission({ ID_Administradores, descricao, nivel_permissao });
+      const permission = await PermissionService.createPermission({
+        ID_Administradores,
+        descricao,
+        nivel_permissao,
+      });
       res.status(201).json(permission);
     } catch (error) {
       next(error);
@@ -19,8 +23,16 @@ class PermissionController {
     try {
       const { id } = req.params;
       const permission = await PermissionService.getPermissionById(id);
-      if (!permission) return res.status(404).json({ error: 'Permissão não encontrada' });
       res.json(permission);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAll(req, res, next) {
+    try {
+      const permissions = await PermissionService.getAllPermissions();
+      res.json(permissions);
     } catch (error) {
       next(error);
     }

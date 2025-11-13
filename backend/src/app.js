@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes.js';
 import administratorRoutes from './routes/administratorRoutes.js';
-import userRoutes from './routes/userRoutes.js';
 import permissionRoutes from './routes/permissionRoutes.js';
 import publicationRoutes from './routes/publicationRoutes.js';
 
@@ -21,7 +20,6 @@ app.use(morgan('dev'));
 // Rotas
 app.use('/api/auth', authRoutes);
 app.use('/api/admins', administratorRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/permissions', permissionRoutes);
 app.use('/api/publications', publicationRoutes);
 

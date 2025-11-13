@@ -5,7 +5,7 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// criar publicação
+// Criar publicação
 router.post(
   '/',
   authMiddleware,
@@ -19,13 +19,16 @@ router.post(
   PublicationController.create
 );
 
-// listar todas publicações
+// Listar todas as publicações
 router.get('/', authMiddleware, PublicationController.getAll);
 
-// listar publicação por id
+// Listar publicações de um administrador específico
+router.get('/admin/:adminId', authMiddleware, PublicationController.getPublicationsByAdmin);
+
+// Buscar publicação por ID
 router.get('/:id', authMiddleware, PublicationController.getById);
 
-// atualizar publicação
+// Atualizar publicação
 router.put(
   '/:id',
   authMiddleware,
@@ -38,18 +41,24 @@ router.put(
   PublicationController.update
 );
 
-// atualizar curtidas e comentários
+// Atualizar curtidas e comentários (métricas)
 router.put(
-  '/:id/metrics',
+  '/:id/stats',
   authMiddleware,
   [
     check('curtidas', 'Curtidas devem ser um número').optional().isInt(),
     check('comentarios', 'Comentários devem ser um número').optional().isInt()
   ],
-  PublicationController.updateLikesAndComments
+  PublicationController.updateStats
 );
 
-// deletar publicação
+// Publicar uma publicação
+router.patch('/:id/publish', authMiddleware, PublicationController.publish);
+
+// Arquivar uma publicação
+router.patch('/:id/archive', authMiddleware, PublicationController.archive);
+
+// Deletar publicação
 router.delete('/:id', authMiddleware, PublicationController.delete);
 
 export default router;
