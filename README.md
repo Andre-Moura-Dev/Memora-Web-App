@@ -39,3 +39,47 @@ O projeto utiliza uma stack moderna e robusta:
 ## 📄 Licença
 
 Este projeto é de uso interno da empresa **Memora Processos Inovadores**.
+
+## ⚙️ Como Rodar o Projeto
+
+Siga os passos abaixo para configurar e executar o projeto localmente:
+
+### 1. Clone o repositório
+```bash
+git clone https://github.com/seuusuario/memora-web-app.git
+cd memora-web-app
+```
+
+### 2. Instale as Dependências
+```bash
+npm install
+# ou
+yarn install
+```
+
+### 3. Configure as variáveis de ambiente
+
+-> Crie um arquivo .env na raiz do Projeto com esses parâmetros
+
+DATABASE_HOST=localhost
+DATABASE_USER=root
+DATABASE_PASSWORD=sua_senha
+DATABASE_NAME=seu_banco
+JWT_SECRET=sua_chave_secreta
+
+### 3.1 Iniciar O FrontEnd:
+
+```bash
+cd frontend
+cd tela-login
+npm run dev
+```
+-> Acesse em http://localhost:3000
+
+### 3.2 Iniciar O BackEnd
+
+```bash
+cd backend
+node src/app.js
+```
+-> Mensagem: Servidor rodando na porta 5000.
