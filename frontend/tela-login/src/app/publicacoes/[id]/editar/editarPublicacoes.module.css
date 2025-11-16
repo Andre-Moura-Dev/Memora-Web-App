@@ -124,6 +124,7 @@
     background-color: #dddddd;
     font-family: var(--font-poppins);
     color: black;
+    cursor: pointer;
     font-weight: 500;
     font-size: 12px;
     line-height: 100%;

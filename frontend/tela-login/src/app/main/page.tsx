@@ -1,64 +1,76 @@
 "use client";
+
 import Header from "@/components/Header/header";
-import styles from "./main.module.css"
+import styles from "./main.module.css";
 import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import Menu from "@/components/Menu/Menu";
 import List from "@/components/List/List";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { admninistradores } from "@/utils/administradores";
 import { permissoes } from "@/utils/permissoes";
 import { publications } from "@/utils/publicacoes";
-import Avatar from "@/assets/user-profile.png";
-import Shield from "@/assets/shield.png";
-import Icon from "@/assets/image-add.png";
 import NavBar from "@/components/NavBar/NavBar";
+import { useParams, useRouter } from "next/navigation";
 
 export default function Home() {
-    
-    const [newPage, setNewPage] = useState("administradores");
-    const [newIcon, setNewIcon] = useState("Avatar");
+    const params = useParams();
+    const router = useRouter();
 
-    let ActualPage = admninistradores;
-    let page = "administradores";
-    let icon = "Avatar";
+    const currentPage = (params?.section as string) || "administradores";
 
-    if(newPage === "administradores") {
-        ActualPage = admninistradores;
-        page = "administradores";
-        icon = "Avatar";
-    } else if(newPage === "permissoes") {
-        ActualPage = permissoes;
-        page = "permissoes";
-        icon = "Shield";
-    } else if(newPage === "publicacoes") {
-        ActualPage = publications;
-        page = "publicacoes";
-        icon = "Icon";
-    }
+    const [page, setPage] = useState(currentPage);
+    const [icon, setIcon] = useState("Avatar");
+
+    const pageConfig: Record<string, any> = {
+        administradores: {
+            data: admninistradores,
+            icon: "Avatar",
+        },
+        permissoes: {
+            data: permissoes,
+            icon: "Shield",
+        },
+        publicacoes: {
+            data: publications,
+            icon: "Icon",
+        },
+    };
+
+    const currentConfig = pageConfig[page] || pageConfig["administradores"];
+
+    useEffect(() => {
+        router.replace(`/main/${page}`);
+    }, [page]);
 
     return (
         <div className={styles.container}>
-          <Header />
-          <div className={styles.main}>
-            <GreenLeftBar />
+            <Header />
 
-            <div className={styles.content}>
-              <NavBar page={setNewPage} icon={setNewIcon} pageTest={newPage} />
+            <div className={styles.main}>
+                <GreenLeftBar />
 
-              <Menu page={newPage}/>
-                <ul className={styles.data}>
-                  {ActualPage.map((item) => (
-                    <List 
-                      key={item.id} 
-                      icon={icon} 
-                      name={item.title} 
-                      id={item.id} 
-                      page={page} 
+                <div className={styles.content}>
+                    <NavBar 
+                        page={setPage} 
+                        icon={setIcon} 
+                        pageTest={page} 
                     />
-                  ))}
-                </ul>
+
+                    <Menu page={page} />
+
+                    <ul className={styles.data}>
+                        {currentConfig.data.map((item: any) => (
+                            <List
+                                key={item.id}
+                                icon={currentConfig.icon}
+                                name={item.title}
+                                id={item.id}
+                                page={page}
+                            />
+                        ))}
+                    </ul>
+                </div>
             </div>
-          </div>
         </div>
     );
 }

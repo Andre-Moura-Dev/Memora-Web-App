@@ -28,11 +28,11 @@ export default function EditPublicationPage() {
     function loadPublicationData(pubId: number) {
         console.log("Carregando dados da publicação com ID:", pubId);
         const allPublications = JSON.parse(localStorage.getItem('publications') || '[]');
-        const publicationToEdit = allPublications.find((pub: PublicationProps) => pub.id === pubId);
+        const publicationToEdit = allPublications.find((pub: any) => pub.id === pubId);
 
         if (publicationToEdit) {
             setTitle(publicationToEdit.title);
-            setPublicationDate(publicationToEdit.publication_date);
+            setPublicationDate(publicationToEdit.publicationDate);
             setCategory(publicationToEdit.category);
             setStatus(publicationToEdit.status);
             setContentHTML(publicationToEdit.content); // Carrega o HTML salvo
@@ -77,10 +77,10 @@ export default function EditPublicationPage() {
             return;
         }
 
-        updatePublicationToDB(dadosAtualizados, novoConteudoHTML);
+        const newPublicationId = updatePublicationToDB(dadosAtualizados, novoConteudoHTML);
 
         alert("Publicação atualizada com sucesso!");
-        router.push("/main");
+        router.push(`/publicacoes/${id}/editar`)
     }
 
     function handleOption(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void {
@@ -151,10 +151,19 @@ export default function EditPublicationPage() {
 
     function updatePublicationToDB(data: any, novoConteudoHTML: string) {
         const allPublications = JSON.parse(localStorage.getItem('publications') || '[]');
-        const index = allPublications.findIndex((pub: PublicationProps) => pub.id === Number(id));
+        const index = allPublications.findIndex((pub: any) => pub.id === Number(id));
 
         if (index !== -1) {
-            allPublications[index] = {...allPublications[index], ...data, content: novoConteudoHTML, atualization_date: new Date().toISOString()};
+            allPublications[index] = {
+                ...allPublications[index],
+                title: data.title,
+                publicationDate: data.publicationDate,
+                category: data.category,
+                status: data.status,
+                content: novoConteudoHTML,
+                updateAt: new Date().toISOString()
+            }
+
             localStorage.setItem('publications', JSON.stringify(allPublications));
             console.log("Publicação atualizada localmente:", allPublications[index]);
         } else {

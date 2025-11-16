@@ -3,7 +3,7 @@ import { useState } from "react";
 import styles from "./publicacoes.module.css";
 import Header from "../../../components/Header/header";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Add from "../../../assets/add-square.png";
 import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import InputMain from "@/components/InputMain/InputMain";
@@ -11,11 +11,12 @@ import Button from "@/components/Button/Button";
 
 export default function PublicationPage() {
 
-    const [titulo, setTitulo] = useState<string>('');
-    const [dataPublicacao, setDataPublicacao] = useState<string>('');
-    const [categoria, setCategoria] = useState<string>('');
+    const [title, setTitle] = useState<string>('');
+    const [publicationDate, setPublicationDate] = useState<string>('');
+    const [category, setCategory] = useState<string>('');
     const [status, setStatus] = useState<string>('Rascunho');
 
+    // const { id } = useParams();
     const router = useRouter();
 
     // Dados Estáticos
@@ -26,9 +27,9 @@ export default function PublicationPage() {
         event.preventDefault();
 
         const dadosPublicacao = {
-            titulo,
-            dataPublicacao,
-            categoria,
+            title,
+            publicationDate,
+            category,
             status,
         };
 
@@ -39,7 +40,7 @@ export default function PublicationPage() {
         const contentHTML = contentContainer?.innerHTML || '';
         console.log("Conteúdo HTML:", contentHTML);
 
-        if (!titulo || !categoria || !dataPublicacao || !contentHTML || !status) {
+        if (!title || !category || !publicationDate || !contentHTML || !status) {
             alert("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
@@ -49,11 +50,11 @@ export default function PublicationPage() {
             return;
         }
 
-        savePublicationToDB(dadosPublicacao, contentHTML);
+        const newPublicationId = savePublicationToDB(dadosPublicacao, contentHTML);
 
         alert("Publicação Adicionada com sucesso!");
 
-        router.push('/main');
+        router.push(`/publicacoes/${newPublicationId}/editar`);
     }
 
 
@@ -126,15 +127,23 @@ export default function PublicationPage() {
     // Simula salvamento no banco de dados
     function savePublicationToDB(data: any, contentHTML: string) {
         const allPublications = JSON.parse(localStorage.getItem('publications') || '[]');
+
         const newPublication = {
             id: Date.now(),
-            ...data,
-            conteudo: contentHTML,
-            dataCriacao: new Date().toISOString(),
+            title: data.title,
+            publicationDate: data.publicationDate,
+            category: data.category,
+            status: data.status,
+            content: contentHTML,
+            createdAt: new Date().toISOString()
         };
+
         allPublications.push(newPublication);
         localStorage.setItem('publications', JSON.stringify(allPublications));
+        
         console.log("Publicação salva localmente: ", newPublication);
+
+        return newPublication.id;
     }
 
     // Definição de inputs
@@ -159,8 +168,8 @@ export default function PublicationPage() {
                             {/* InputMain controlado */}
                             <InputMain 
                                 input={InputTitle} 
-                                value={titulo} 
-                                onChange={(e) => setTitulo(e.target.value)} 
+                                value={title} 
+                                onChange={(e) => setTitle(e.target.value)} 
                             />
 
                             <div className={styles.formRow}>
@@ -170,8 +179,8 @@ export default function PublicationPage() {
                                     <select 
                                         name="categoria" 
                                         className={styles.input} 
-                                        value={categoria} 
-                                        onChange={(e) => setCategoria(e.target.value)}
+                                        value={category} 
+                                        onChange={(e) => setCategory(e.target.value)}
                                     >
                                         <option value="">Selecione a categoria</option>
                                         {categories.slice(1).map((cat) => (
@@ -182,8 +191,8 @@ export default function PublicationPage() {
                                 {/* InputMain controlado */}
                                 <InputMain 
                                     input={InputDate} 
-                                    value={dataPublicacao} 
-                                    onChange={(e) => setDataPublicacao(e.target.value)} 
+                                    value={publicationDate} 
+                                    onChange={(e) => setPublicationDate(e.target.value)} 
                                 />
                             </div>
                             
