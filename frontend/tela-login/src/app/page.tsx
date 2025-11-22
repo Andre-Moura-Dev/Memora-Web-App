@@ -1,19 +1,22 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Login from "./login/page";
 
 export default function Home() {
-  const router = useRouter();
+  // const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
 
-    if (!token) {
-      router.push("/login");
-    } else {
-      router.push("/main");
-    }
-  }, [router]);
+  //   if (!token) {
+  //     router.push("/login");
+  //   } else {
+  //     router.push("/main");
+  //   }
+  // }, [router]);
 
-  return null;
+  return (
+    <Login/>
+  );
 }

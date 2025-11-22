@@ -1,3 +1,4 @@
+"use client";
 import styles from "@/components/Menu/menu.module.css";
 import Image from "next/image";
 import Add from "@/assets/add-square.png";

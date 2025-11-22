@@ -1,37 +1,49 @@
 "use client";
+import { useState } from "react";
 import styles from "./navbar.module.css";
+import { useRouter } from "next/navigation";
+// import { usePathname } from "next/navigation";
 
 type NavBarProps = {
-    page: (page: string) => void;
-    icon: (icon: string) => void;
-    pageTest: string;
+    // page: (page: string) => void;
+    // icon: (icon: string) => void;
+    newPage: string;
 }
 
-export default function NavBar({page, icon, pageTest}: NavBarProps) {
+export default function NavBar({newPage}: NavBarProps) {
+    const router = useRouter();
+    const [page, setPage] = useState(newPage);
+    // const pathname = usePathname();
 
-    function changePage(newPage: string, newIcon: string) {
-        
-        page(newPage);
-        icon(newIcon);
-    }
+    // function changePage(page: string) {
+    //     if(page === "administradores") {
+    //         router.push(`/${page}`);
+    //         setPage("administradores");
+    //     } else if(page === "permissoes") {
+    //         setPage("permissoes");
+    //         console.log("PERMISSÃO!!!");
+    //         router.push(`/${page}`);
+    //     } else if(page === "publicacoes") {
+    //         router.push(`/${page}`);
+    //         setPage("publicacoes");
+    //     } else {
+    //         alert("Página não encontrada!");
+    //     }
+    //     console.log(page);
+    // }
 
-    let ActualPage = "admninistradores";
 
-    console.log(pageTest);
-
-    if(pageTest === "administradores") {
-        ActualPage = "administradores";
-    } else if(pageTest === "permissoes") {
-        ActualPage = "permissoes";
-    } else if(pageTest === "publicacoes") {
-        ActualPage = "publicacoes";
-    }
+    
 
     return (
         <nav className={styles.navbar}>
-            <h1 className={`${styles.option} ${ActualPage === 'administradores' ? styles.selected : ''}`} onClick={() => changePage("administradores", "Avatar")}>Administradores</h1>
-            <h1 className={`${styles.option} ${ActualPage === 'permissoes' ? styles.selected : ''}`} onClick={() => changePage("permissoes", "Shield")}>Permissões</h1>
-            <h1 className={`${styles.option} ${ActualPage === 'publicacoes' ? styles.selected : ''}` } onClick={() => changePage("publicacoes", "Icon")}>Publicações</h1>
+            <h1 className={`${styles.option} ${page === 'administradores' ? styles.selected : ''}`} onClick={() => {router.push("administradores"), setPage("administradores")}}>Administradores</h1>
+            <h1 className={`${styles.option} ${page === 'permissoes' ? styles.selected : ''}`} onClick={() => {router.push("permissoes"), setPage("permissoes")}}>Permissões</h1>
+            <h1 className={`${styles.option} ${page === 'publicacoes' ? styles.selected : ''}` } onClick={() => {router.push("publicacoes"), setPage("publicacoes")}}>Publicações</h1>
+
+            {/* <h1 className={`${styles.option} ${page === 'administradores' ? styles.selected : ''}`} onClick={() => changePage(newPage)}>Administradores</h1>
+            <h1 className={`${styles.option} ${page === 'permissoes' ? styles.selected : ''}`} onClick={() => changePage(newPage)}>Permissões</h1>
+            <h1 className={`${styles.option} ${page === 'publicacoes' ? styles.selected : ''}` } onClick={() => changePage(newPage)}>Publicações</h1> */}
         </nav>
     );
 }

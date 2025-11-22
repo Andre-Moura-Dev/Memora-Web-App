@@ -22,7 +22,6 @@ export default function InputMain({ input, value, onChange }: InputMainProps) {
                 <span style={input.typeForm === "publication" ? {color: 'white'} : {color: 'red'}}>*</span>
             </label>
 
-            {/* Agora o input é controlado */}
             <input 
                 type={input.type}
                 name={input.name}
