@@ -40,6 +40,7 @@ export default function List({ icon, name, id, page }: ListProps) {
 
     const handleEdit = () => {
         router.push(`${basePath}/${id}/editar`);
+        console.log("FUNCIONA!!!");
     };
 
     const handleDelete = () => {

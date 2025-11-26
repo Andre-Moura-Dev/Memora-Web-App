@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button/Button";
 import React from "react";
 import InputMain from "@/components/InputMain/InputMain";
+import NavBar from "@/components/NavBar/NavBar";
 
 export default function AdminPage() {
 
@@ -66,6 +67,8 @@ export default function AdminPage() {
                     <GreenLeftBar/>
 
                     <div className={styles.content}>
+                        <NavBar newPage="administradores" />
+                        
                         <div className={styles.header}>
                             <Image src={Add} alt="Cadastrar Administrador" width="23" height="25"/>
                             <h2 className={styles.title}>Cadastrar Administrador</h2>
@@ -79,7 +82,7 @@ export default function AdminPage() {
                                         <input type={input.type} name={input.name} className={`${styles.input} ${input.key === 3 || input.key === 4 ? styles.changeWidth : ''}`} />
                                     </div> */}
 
-                                    <InputMain input={input} />
+                                    {/* <InputMain input={input} /> */}
 
                                     {input.key === 3 && (
                                         <div className={styles.textsPasswords}>

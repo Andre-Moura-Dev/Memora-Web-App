@@ -1,7 +1,9 @@
 "use client";
+import { useState } from "react";
 import styles from "./publicacoes.module.css";
 import Header from "../../../components/Header/header";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 import Add from "../../../assets/add-square.png";
 import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import InputMain from "@/components/InputMain/InputMain";
@@ -9,57 +11,52 @@ import Button from "@/components/Button/Button";
 
 export default function PublicationPage() {
 
-    const InputTitle = { label: "Título:", name: "titulo", type: "text", key: 1, typeForm: "publication" };
-    // const InputStatus = { label: "Status", name: "status", type: "text", key: 4, typeForm: "publication" };
-    // const InputContent = { label: "Conteúdo:", name: "content", type: "textarea", key: 1, typeForm: "publication" };
-    // const InputCategory = { label: "Categoria", name: "categoria", type: "text", key: 3, typeForm: "publication" };
-    const InputDate = { label: "Data de Publicação:", name: "dataPublicacao", type: "date", key: 3, typeForm: "publication" };
+    const [title, setTitle] = useState<string>('');
+    const [publicationDate, setPublicationDate] = useState<string>('');
+    const [category, setCategory] = useState<string>('');
+    const [status, setStatus] = useState<string>('Rascunho');
 
+    // const { id } = useParams();
+    const router = useRouter();
+
+    // Dados Estáticos
     let categories = ["", "Notícias", "Eventos", "Comunicados", "Outros"];
-
     const options = ["Adicionar Cabeçalho", "Adicionar Subtítulo", "Adicionar Texto", "Adicionar Link", "Adicionar Imagem"];
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
 
-        
-        const formData = new FormData(event.target as HTMLFormElement);
-        
-        
+        const dadosPublicacao = {
+            title,
+            publicationDate,
+            category,
+            status,
+        };
+
+        console.log("Dados da Publicação: ", dadosPublicacao);
+
+        // Captura o conteúdo da div contentEditable
         const contentContainer = document.querySelector('[data-name="content"]');
+        const contentHTML = contentContainer?.innerHTML || '';
+        console.log("Conteúdo HTML:", contentHTML);
 
-        let content: string = '';
-
-        content = contentContainer?.innerHTML || '';
-
-        // contentContainer?.childNodes.forEach((child) => {
-
-        //     const text = child.textContent;
-        //     if (text && !text.includes('Adicionar')) {
-        //         content = content.concat(text);
-        //         // console.log(child.firstChild);
-        //     }
-
-        // });
-
-
-        formData.append("conteudo", content);
-
-        console.log(content);
-        console.log("Dados da publicação:", Object.fromEntries(formData));
-        
-        if (
-            !formData.get("titulo") || 
-            !formData.get("categoria") || 
-            !formData.get("dataPublicacao") ||
-            !formData.get("conteudo") ||
-            !formData.get("status")) {
+        if (!title || !category || !publicationDate || !contentHTML || !status) {
             alert("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
 
-        alert("Publicação adicionada com sucesso!");
+        if (!contentHTML || contentHTML.trim() === "") {
+            alert("O conteúdo é obrigatório");
+            return;
+        }
+
+        const newPublicationId = savePublicationToDB(dadosPublicacao, contentHTML);
+
+        alert("Publicação Adicionada com sucesso!");
+
+        router.push(`/publicacoes/${newPublicationId}/editar`);
     }
+
 
     function handleOption(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void {
         const option = event.currentTarget;
@@ -127,6 +124,32 @@ export default function PublicationPage() {
         }
     }
 
+    // Simula salvamento no banco de dados
+    function savePublicationToDB(data: any, contentHTML: string) {
+        const allPublications = JSON.parse(localStorage.getItem('publications') || '[]');
+
+        const newPublication = {
+            id: Date.now(),
+            title: data.title,
+            publicationDate: data.publicationDate,
+            category: data.category,
+            status: data.status,
+            content: contentHTML,
+            createdAt: new Date().toISOString()
+        };
+
+        allPublications.push(newPublication);
+        localStorage.setItem('publications', JSON.stringify(allPublications));
+        
+        console.log("Publicação salva localmente: ", newPublication);
+
+        return newPublication.id;
+    }
+
+    // Definição de inputs
+    const InputTitle = { label: "Título:", name: "titulo", type: 'text', key: 1, typeForm: "publication" };
+    const InputDate = { label: "Data de Publicação", name: "dataPublicacao", type: "date", key: 3, typeForm: "publication" }
+
     return (
         <>
             <div className={styles.container}>
@@ -142,29 +165,40 @@ export default function PublicationPage() {
                         </div>
 
                         <form className={styles.form} onSubmit={handleSubmit}>
-                            <InputMain input={InputTitle} />
+                            {/* InputMain controlado */}
+                            <InputMain 
+                                input={InputTitle} 
+                                value={title} 
+                                onChange={(e) => setTitle(e.target.value)} 
+                            />
 
                             <div className={styles.formRow}>
-
                                 <div className={styles.formItem}>
                                     <label className={styles.label}>Categoria:<span style={{ color: "white" }}>*</span></label>
-                                    <select name="categoria" className={styles.input}>
-                                        <option defaultValue={""}>Selecione a categoria</option>
-                                        {categories.slice(1).map((categorie) => (
-                                            <option key={categorie} value={categorie}>{categorie}</option>
+                                    {/* Select Controlado */}
+                                    <select 
+                                        name="categoria" 
+                                        className={styles.input} 
+                                        value={category} 
+                                        onChange={(e) => setCategory(e.target.value)}
+                                    >
+                                        <option value="">Selecione a categoria</option>
+                                        {categories.slice(1).map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
                                 </div>
-                                <InputMain input={InputDate} />
+                                {/* InputMain controlado */}
+                                <InputMain 
+                                    input={InputDate} 
+                                    value={publicationDate} 
+                                    onChange={(e) => setPublicationDate(e.target.value)} 
+                                />
                             </div>
-
                             
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Conteúdo:</label>
-                                {/* <textarea name="conteudo" className={`${styles.input} ${styles.textarea}`} /> */}
-
                                 <div className={styles.textAreaContainer} data-name='content-container'>
-
                                     <div className={styles.optionsContainer}>
                                         {options.map((option) => (
                                             <div key={option} className={styles.AddButton} onClick={handleOption}>
@@ -178,10 +212,17 @@ export default function PublicationPage() {
 
                             <div className={styles.formItem}>
                                 <label className={styles.label}>Status:</label>
-                                <select className={`${styles.input} ${styles.changeWidth}`} name="status">
-                                    <option defaultValue="Rascunho">Rascunho</option>
-                                    <option value="publicado">Publicado</option>
-                                    <option value="arquivado">Arquivado</option>
+                                {/* Select controlado */}
+                                <select 
+                                    className={`${styles.input} ${styles.changeWidth}`} 
+                                    name="status" 
+                                    value={status} 
+                                    onChange={(e) => setStatus(e.target.value)}
+                                >
+                                    <option value="Rascunho">Rascunho</option>
+                                    <option value="Publicado">Publicado</option>
+                                    <option value="Arquivado">Arquivado</option>
+
                                 </select>
                             </div>
                             <Button label="Adicionar publicação" variant="primary" type="submit" />

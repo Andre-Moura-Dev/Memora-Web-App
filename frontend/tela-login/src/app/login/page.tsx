@@ -6,6 +6,7 @@ import styles from "./login.module.css";
 import Input from "@/components/Input/Input";
 import { useState } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Login() {
   const [user, setUser] = useState("");
@@ -47,6 +48,10 @@ export default function Login() {
     }
   }
 
+  function loginTest() {
+    return router.push("/administradores");
+  }
+
   return (
     <div className={styles.main}>
       <div className={styles.form}>
@@ -67,10 +72,10 @@ export default function Login() {
           onChange={(e) => setSenha(e.target.value)}
           type="password"
         />
-        <Link href="./main" className={styles.forgotPassword}>
+        <Link href='' className={styles.forgotPassword}>
           Esqueceu a senha?
         </Link>
-        <button className={styles.button} onClick={Logar}>
+        <button className={styles.button} onClick={loginTest}>
           Logar
         </button>
       </div>
