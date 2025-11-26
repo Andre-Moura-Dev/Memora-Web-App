@@ -48,7 +48,7 @@ export default function Login() {
     }
   }
 
-  function routerTest() {
+  function loginTest() {
     return router.push("/administradores");
   }
 
@@ -75,7 +75,7 @@ export default function Login() {
         <Link href='' className={styles.forgotPassword}>
           Esqueceu a senha?
         </Link>
-        <button className={styles.button} onClick={routerTest}>
+        <button className={styles.button} onClick={loginTest}>
           Logar
         </button>
       </div>

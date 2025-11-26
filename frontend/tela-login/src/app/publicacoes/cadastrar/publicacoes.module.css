@@ -17,7 +17,7 @@
 
 .content {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     background-color: var(--page-background);
     display: flex;
     flex-direction: column;
@@ -51,6 +51,7 @@
     justify-content: flex-start;
     align-items: center;
     margin-top: 20px;
+    padding-bottom: 40px;
 }
 
 .formItem {
@@ -100,7 +101,8 @@
     padding: 20px;
     gap: 10px;
     width: 100%;
-    height: 467px;
+    min-height: 300px;
+    height: auto;
     background-color: var(--page-background);
 }
 
