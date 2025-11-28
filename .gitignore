@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+/backend/uploads
+
+frontend/tela-login/node_modules/
+
+frontend/tela-login/.next/
