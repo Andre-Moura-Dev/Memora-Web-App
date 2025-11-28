@@ -25,17 +25,21 @@ export default function AdminPage() {
     const imageExclamation = Exclamation;
     
     // Lógica para lidar com o envio do formulário
-    function handleSubmit(event: React.FormEvent) {
+    // substitua essa função no AdminPage
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        
-        const formData = new FormData(event.target as HTMLFormElement);
+                
+        const form = event.target as HTMLFormElement;
+        const formData = new FormData(form);
 
+        // validações básicas
         if (
             !formData.get("nome") || 
             !formData.get("email") || 
             !formData.get("senha") || 
             !formData.get("confirmaSenha") || 
-            !formData.get("nivelAcesso")) {
+            !formData.get("nivelAcesso")
+        ) {
             alert("Por favor, preencha todos os campos obrigatórios!");
             return;
         }
@@ -45,17 +49,59 @@ export default function AdminPage() {
             return;
         }
 
-        const user = {
-            nome: formData.get("nome"),
-            email: formData.get("email"),
-            senha: formData.get("senha"),
-            confirmaSenha: formData.get("confirmaSenha"),
-            nivelAcesso: formData.get("nivelAcesso"),
+        const nome = formData.get("nome") as string;
+        const email = formData.get("email") as string;
+        const senha = formData.get("senha") as string;
+        const nivelAcesso = formData.get("nivelAcesso") as string;
+
+        // montar body para bater com o backend
+        const body = {
+            nome,
+            email,
+            senha,
+            nivel_acesso: nivelAcesso,      // nome que o backend espera
+            tipo_usuario: "Administrador",  // você pode depois trocar por um select
         };
 
-        console.log("Usuário cadastrado:", user);
-        alert("Administrador cadastrado com sucesso!");
+        try {
+            const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admins/register`;
+            console.log("POST URL:", url);
+            console.log("Body enviado:", body);
+
+            const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+            });
+
+            const text = await res.text();
+            console.log("Status registro admin:", res.status);
+            console.log("Resposta bruta:", text);
+
+            if (!res.ok) {
+            let errorBody: any = {};
+            try {
+                errorBody = JSON.parse(text);
+            } catch {
+                errorBody = {};
+            }
+            throw new Error(errorBody.error || "Erro ao cadastrar administrador");
+            }
+
+            const createdAdmin = JSON.parse(text);
+            console.log("Administrador cadastrado:", createdAdmin);
+            alert("Administrador cadastrado com sucesso!");
+
+            // se quiser, limpa o form:
+            form.reset();
+        } catch (err: any) {
+            console.error(err);
+            alert("Erro ao cadastrar administrador: " + err.message);
+        }
     }
+
 
     return (
         <>

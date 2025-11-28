@@ -5,6 +5,13 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
+
+// Listar todas as publicações (PÚBLICO)
+router.get('/', PublicationController.getAll);
+
+// Buscar publicação por ID (PÚBLICO)
+router.get('/:id', PublicationController.getById);
+
 // Criar publicação
 router.post(
   '/',
@@ -18,6 +25,7 @@ router.post(
   ],
   PublicationController.create
 );
+
 
 // Listar todas as publicações
 router.get('/', authMiddleware, PublicationController.getAll);

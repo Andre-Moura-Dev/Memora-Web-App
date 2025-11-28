@@ -41,17 +41,45 @@ class Publication {
   }
 
   // 👉 Lista todas as publicações
+  // 👉 Lista todas as publicações (para painel admin)
   static async findAll() {
     const [rows] = await db.query(
-      `SELECT p.id_publicacoes, p.titulo, p.categoria, p.data_publicacao,
-              p.status, p.curtidas, p.comentarios, 
-              a.nome AS autor_nome
-       FROM Publicacoes p
-       JOIN Administradores a ON p.ID_Administradores = a.id_administradores
-       ORDER BY p.data_publicacao DESC`
+      `SELECT 
+          p.id_publicacoes, 
+          p.titulo, 
+          p.conteudo,            -- AGORA VAI JUNTO
+          p.categoria, 
+          p.data_publicacao,
+          p.status, 
+          p.curtidas, 
+          p.comentarios, 
+          a.nome AS autor_nome
+      FROM Publicacoes p
+      JOIN Administradores a ON p.ID_Administradores = a.id_administradores
+      ORDER BY p.data_publicacao DESC`
     );
     return rows;
   }
+
+  // 👉 Lista publicações públicas (somente "Publicado")
+  static async findAllPublic() {
+    const [rows] = await db.query(
+      `SELECT 
+          p.id_publicacoes,
+          p.titulo,
+          p.conteudo,
+          p.categoria,
+          p.data_publicacao,
+          p.status,
+          a.nome AS autor_nome
+      FROM Publicacoes p
+      JOIN Administradores a ON p.ID_Administradores = a.id_administradores
+      WHERE p.status = 'Publicado'
+      ORDER BY p.data_publicacao DESC`
+    );
+    return rows;
+  }
+
 
   // 👉 Lista todas as publicações de um administrador específico
   static async findByAdmin(adminId) {

@@ -15,37 +15,46 @@ export default function Login() {
   async function Logar() {
     if (senha.length < 8) {
       alert("Sua senha precisa ter no mínimo 8 dígitos!");
-      return router.push("/login");
+      return;
     }
 
     try {
-        const response = await fetch("http://localhost:5000/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: user,
-                password: senha,
-            }),
-        });
-
-        if (!response.ok) {
-            alert("Usuário ou senha inválidos!");
-            return;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admins/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user,
+            senha: senha, // ⚠️ backend espera "senha", não "password"
+          }),
         }
+      );
 
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        console.error("Erro no login:", err);
+        alert(err.error || "Usuário ou senha inválidos!");
+        return;
+      }
 
-        router.push("/main");
-        
+      const data = await response.json();
+      console.log("Resposta login:", data);
+
+      // ⚠️ backend devolve { admin, token }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("admin", JSON.stringify(data.admin));
+
+      // redireciona para o painel
+      router.push("/main");
     } catch (error) {
-        console.error("Erro ao fazer login: ", error);
-        alert("Erro ao conectar com o servidor. Tente novamente.");
+      console.error("Erro ao fazer login: ", error);
+      alert("Erro ao conectar com o servidor. Tente novamente.");
     }
   }
+
 
   return (
     <div className={styles.main}>

@@ -57,6 +57,13 @@ class PublicationService {
 
         return await Publication.delete(id);
     }
+
+    // 👉 publicações para o site público (com conteudo + apenas publicadas)
+    static async getAllPublicPublications() {
+        return await Publication.findAllPublic();
+    }
 }
+
+
 
 export default PublicationService;
