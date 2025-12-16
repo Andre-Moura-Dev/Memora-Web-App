@@ -8,10 +8,16 @@ import GreenLeftBar from "@/components/GreenLeftBar/GreenLeftBar";
 import Input from "@/components/Input/Input";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button/Button";
-import React from "react";
+import React, { useState } from "react";
 import InputMain from "@/components/InputMain/InputMain";
 
 export default function AdminPage() {
+    const [formValues, setFormValues] = useState({
+        nome: "",
+        email: "",
+        senha: "",
+        confirmaSenha: ""
+    });
 
     let inputs = [
         { label: "Nome", name: "nome", type: "text", key: 1, typeForm: "admin" },
@@ -20,12 +26,23 @@ export default function AdminPage() {
         { label: "Confirmação da senha", name: "confirmaSenha", type: "password", key: 4, typeForm: "admin" }
     ];
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormValues(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     let options = ["","Nível 1", "Nível 2", "Nível 3", "Nível 4"];
 
     const imageExclamation = Exclamation;
     
     // Lógica para lidar com o envio do formulário
     // substitua essa função no AdminPage
+
+    const router = useRouter();
+
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
                 
@@ -94,6 +111,7 @@ export default function AdminPage() {
             console.log("Administrador cadastrado:", createdAdmin);
             alert("Administrador cadastrado com sucesso!");
 
+            router.push("/main");
             // se quiser, limpa o form:
             form.reset();
         } catch (err: any) {
@@ -125,7 +143,7 @@ export default function AdminPage() {
                                         <input type={input.type} name={input.name} className={`${styles.input} ${input.key === 3 || input.key === 4 ? styles.changeWidth : ''}`} />
                                     </div> */}
 
-                                    <InputMain input={input} />
+                                    <InputMain input={{...input, value: formValues[input.name as keyof typeof formValues], onChange: handleInputChange, inputKey: input.key}} />
 
                                     {input.key === 3 && (
                                         <div className={styles.textsPasswords}>

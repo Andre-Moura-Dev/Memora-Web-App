@@ -137,7 +137,7 @@ export default function Home() {
 
         <div className={styles.content}>
           {/* NavBar continua controlando qual aba está ativa */}
-          <NavBar page={setNewPage} icon={() => {}} pageTest={newPage} />
+          <NavBar page={(page) => setNewPage(page as "administradores" | "permissoes" | "publicacoes")} icon={() => {}} pageTest={newPage} />
 
           <Menu page={newPage} />
 

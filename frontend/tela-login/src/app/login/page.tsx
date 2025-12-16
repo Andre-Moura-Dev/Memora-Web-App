@@ -13,8 +13,8 @@ export default function Login() {
   const router = useRouter();
 
   async function Logar() {
-    if (senha.length < 8) {
-      alert("Sua senha precisa ter no mínimo 8 dígitos!");
+    if (senha.length < 6) {
+      alert("Sua senha precisa ter no mínimo 6 dígitos!");
       return;
     }
 
@@ -27,7 +27,7 @@ export default function Login() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: user,
+            email: user.trim().toLowerCase(),
             senha: senha, // ⚠️ backend espera "senha", não "password"
           }),
         }
@@ -62,16 +62,16 @@ export default function Login() {
         <h1 className={styles.title}>Login</h1>
         <Input
           label="Email:"
-          id="usuario"
-          placeholder="Informe o seu nome de usuário"
+          id="email"
+          placeholder="Informe o seu email de usuário"
           value={user}
           onChange={(e) => setUser(e.target.value)}
-          type="text"
+          type="email"
         />
         <Input
           label="Senha:"
           id="senha"
-          placeholder="Informe a sua senha de 8 dígitos"
+          placeholder="Informe a sua senha de 6 dígitos"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           type="password"
