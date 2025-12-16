@@ -14,43 +14,48 @@ export default function Login() {
   const router = useRouter();
 
   async function Logar() {
-    if (senha.length < 8) {
-      alert("Sua senha precisa ter no mínimo 8 dígitos!");
-      return router.push("/login");
+    if (senha.length < 6) {
+      alert("Sua senha precisa ter no mínimo 6 dígitos!");
+      return;
     }
 
     try {
-        const response = await fetch("http://localhost:5000/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: user,
-                password: senha,
-            }),
-        });
-
-        if (!response.ok) {
-            alert("Usuário ou senha inválidos!");
-            return;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/admins/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.trim().toLowerCase(),
+            senha: senha, // ⚠️ backend espera "senha", não "password"
+          }),
         }
+      );
 
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        console.error("Erro no login:", err);
+        alert(err.error || "Usuário ou senha inválidos!");
+        return;
+      }
 
-        router.push("/main");
-        
+      const data = await response.json();
+      console.log("Resposta login:", data);
+
+      // ⚠️ backend devolve { admin, token }
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("admin", JSON.stringify(data.admin));
+
+      // redireciona para o painel
+      router.push("/main");
     } catch (error) {
-        console.error("Erro ao fazer login: ", error);
-        alert("Erro ao conectar com o servidor. Tente novamente.");
+      console.error("Erro ao fazer login: ", error);
+      alert("Erro ao conectar com o servidor. Tente novamente.");
     }
   }
 
-  function loginTest() {
-    return router.push("/administradores");
-  }
 
   return (
     <div className={styles.main}>
@@ -58,16 +63,16 @@ export default function Login() {
         <h1 className={styles.title}>Login</h1>
         <Input
           label="Email:"
-          id="usuario"
-          placeholder="Informe o seu nome de usuário"
+          id="email"
+          placeholder="Informe o seu email de usuário"
           value={user}
           onChange={(e) => setUser(e.target.value)}
-          type="text"
+          type="email"
         />
         <Input
           label="Senha:"
           id="senha"
-          placeholder="Informe a sua senha de 8 dígitos"
+          placeholder="Informe a sua senha de 6 dígitos"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           type="password"

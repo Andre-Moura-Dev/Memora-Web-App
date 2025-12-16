@@ -10,7 +10,7 @@ class Administrator {
     const hashedPassword = await bcrypt.hash(senha, 10);
 
     const [result] = await db.query(
-      `INSERT INTO Administradores (nivel_acesso, nome, email, senha, tipo_usuario)
+      `INSERT INTO administradores (nivel_acesso, nome, email, senha, tipo_usuario)
        VALUES (?, ?, ?, ?, ?)`,
       [nivel_acesso, nome, email, hashedPassword, tipo_usuario]
     );
@@ -21,7 +21,7 @@ class Administrator {
   static async findById(id) {
     const [rows] = await db.query(
       `SELECT id_administradores, nivel_acesso, nome, email, tipo_usuario
-       FROM Administradores
+       FROM administradores
        WHERE id_administradores = ?`,
       [id]
     );
@@ -31,16 +31,29 @@ class Administrator {
   static async findByEmail(email) {
     const [rows] = await db.query(
       `SELECT id_administradores, nivel_acesso, nome, email, senha, tipo_usuario
-       FROM Administradores
+       FROM administradores
        WHERE email = ?`,
       [email]
     );
     return rows[0] || null;
   }
 
+  static async findAll() {
+    const [rows] = await db.query(
+      `SELECT
+        id_administradores,
+        nivel_acesso,
+        nome,
+        email,
+        tipo_usuario
+       FROM administradores`
+    );
+    return rows;
+  }
+
   static async update(id, { nome, email, nivel_acesso, tipo_usuario }) {
     const [result] = await db.query(
-      `UPDATE Administradores
+      `UPDATE administradores
        SET nome = ?, email = ?, nivel_acesso = ?, tipo_usuario = ?
        WHERE id_administradores = ?`,
       [nome, email, nivel_acesso, tipo_usuario, id]
@@ -61,7 +74,7 @@ class Administrator {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     const [result] = await db.query(
-      `UPDATE Administradores
+      `UPDATE administradores
        SET senha = ?
        WHERE id_administradores = ?`,
       [hashedPassword, id]
@@ -74,7 +87,7 @@ class Administrator {
 
   static async delete(id) {
     const [result] = await db.query(
-      `DELETE FROM Administradores WHERE id_administradores = ?`,
+      `DELETE FROM administradores WHERE id_administradores = ?`,
       [id]
     );
 

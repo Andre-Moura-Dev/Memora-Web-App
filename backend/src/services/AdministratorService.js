@@ -70,6 +70,10 @@ class AdministratorService {
     return admin;
   }
 
+  static async getAllAdministrators() {
+    return await Administrator.findAll();
+  }
+
   //Atualiza dados do administrador
   static async updateAdministrator(id, updateData) {
     const { nome, email, nivel_acesso, tipo_usuario } = updateData;

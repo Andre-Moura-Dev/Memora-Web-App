@@ -9,12 +9,12 @@ export default function Home() {
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
 
-  //   if (!token) {
-  //     router.push("/login");
-  //   } else {
-  //     router.push("/main");
-  //   }
-  // }, [router]);
+    if (!token) {
+      router.replace("/main");
+    } else {
+      router.replace("/login");
+    }
+  }, [router]);
 
   return (
     <Login/>

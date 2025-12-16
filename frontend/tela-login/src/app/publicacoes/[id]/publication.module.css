@@ -1,0 +1,162 @@
+.page {
+  min-height: 100vh;
+  background: #f4f5f7;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #111827;
+}
+
+/* Header simples */
+
+.header {
+  background: #022820;
+  color: #ffffff;
+  padding: 10px 0;
+}
+
+.headerInner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logoLink {
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+/* reaproveitando estilo de login outline */
+
+.loginButtonOutline {
+  border: 1px solid #10b981;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #10b981;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.loginButtonOutline:hover {
+  background: #10b981;
+  color: #022820;
+}
+
+/* MAIN / ARTIGO */
+
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 16px 40px;
+}
+
+.article {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 22px 22px 26px;
+  box-shadow: 0 10px 28px rgba(148, 163, 184, 0.55);
+  border: 1px solid #e5e7eb;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.category {
+  background: #0f766e;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.date,
+.author {
+  font-size: 12px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #022820;
+  margin-bottom: 16px;
+}
+
+/* Conteúdo vindo do banco (HTML) */
+
+.content {
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.content h2 {
+  font-size: 20px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  color: #022820;
+}
+
+.content h3 {
+  font-size: 17px;
+  margin-top: 14px;
+  margin-bottom: 4px;
+  color: #065f46;
+}
+
+.content p {
+  margin: 8px 0;
+}
+
+.content a {
+  color: #0ea5e9;
+  text-decoration: underline;
+}
+
+.content img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 16px 0;
+  display: block;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
+}
+
+.backArea {
+  margin-top: 18px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 10px;
+}
+
+.backLink {
+  font-size: 13px;
+  color: #0ea5e9;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* estados */
+
+.loading,
+.error {
+  max-width: 960px;
+  margin: 40px auto;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #4b5563;
+}

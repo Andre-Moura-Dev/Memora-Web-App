@@ -9,8 +9,11 @@ export default function GreenLeftBar() {
     const router = useRouter();
 
     function Logout() {
-        router.push("/");
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+        router.push("/login");
     }
+
     
 
     return (

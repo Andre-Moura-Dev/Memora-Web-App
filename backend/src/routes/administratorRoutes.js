@@ -25,6 +25,7 @@ router.post(
 );
 
 // Rotas protegidas (apenas admins autenticados)
+router.get('/', authMiddleware, AdministratorController.getAll)
 router.get('/:id', authMiddleware, AdministratorController.getById);
 
 router.put(
